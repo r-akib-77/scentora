@@ -64,11 +64,21 @@ export const metadata: Metadata = {
     description: siteConfig.brand.description,
     type: "website",
     siteName: siteConfig.brand.name,
+    url: "/",
+    images: [
+      {
+        url: "/og.jpg",
+        width: 1200,
+        height: 630,
+        alt: `${siteConfig.brand.name} — ${siteConfig.brand.tagline}`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: `${siteConfig.brand.name} — ${siteConfig.brand.tagline}`,
     description: siteConfig.brand.description,
+    images: ["/og.jpg"],
   },
   robots: { index: false, follow: false },
 };
