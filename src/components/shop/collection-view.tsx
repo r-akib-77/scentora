@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -11,7 +10,7 @@ import {
   MobileFilterDrawer,
 } from "@/components/shop/mobile-filter-drawer";
 import { cataloguePriceRange, products } from "@/data/products";
-import { applyFilters, emptyFilters } from "@/lib/filters";
+import { applyFilters, emptyFilters, parseFiltersFromParams } from "@/lib/filters";
 import { familyLabels, genderLabels, sizeLabel, tierLabels } from "@/lib/utils";
 import type { FilterState, Gender, PriceTier, SortOption, ScentFamily } from "@/types";
 
@@ -27,20 +26,34 @@ const sortOptions: { value: SortOption; label: string }[] = [
 /**
  * The interactive collection view: search, filters, sorting and the grid.
  * All filtering happens locally against the mock catalogue.
+ *
+ * The active filters are mirrored into the query string with
+ * `history.replaceState`, so links stay shareable without triggering a
+ * server round trip. That keeps the page compatible with a static export.
  */
 export function CollectionView({ initialFilters }: { initialFilters?: Partial<FilterState> }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
   const [filters, setFilters] = useState<FilterState>({
     ...emptyFilters,
     ...initialFilters,
   });
   const [queryInput, setQueryInput] = useState(initialFilters?.query ?? "");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  // Read the filters from the URL on first paint (client side only).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if ([...params.keys()].length > 0) {
+      const parsed = parseFiltersFromParams(params);
+      setFilters((current) => ({ ...current, ...parsed }));
+      setQueryInput(parsed.query ?? "");
+    }
+    setReady(true);
+  }, []);
 
   // Keep the address bar in sync so filters can be shared or bookmarked.
   useEffect(() => {
+    if (!ready) return;
     const params = new URLSearchParams();
     if (filters.query.trim()) params.set("q", filters.query.trim());
     if (filters.brands.length) params.set("brand", filters.brands.join(","));
@@ -57,8 +70,9 @@ export function CollectionView({ initialFilters }: { initialFilters?: Partial<Fi
     if (filters.sort !== "featured") params.set("sort", filters.sort);
 
     const query = params.toString();
-    router.replace(query ? `/shop?${query}` : "/shop", { scroll: false });
-  }, [filters, router]);
+    const next = query ? `/shop?${query}` : "/shop";
+    window.history.replaceState(null, "", next);
+  }, [filters, ready]);
 
   // Debounce the search field so typing stays smooth.
   useEffect(() => {
@@ -72,13 +86,15 @@ export function CollectionView({ initialFilters }: { initialFilters?: Partial<Fi
 
   // Reflect back-navigation changes from the URL.
   useEffect(() => {
-    const param = searchParams.get("q");
-    if (param !== null && param !== filters.query) {
-      setQueryInput(param);
-      setFilters((current) => ({ ...current, query: param }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+    const onPopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const parsed = parseFiltersFromParams(params);
+      setFilters((current) => ({ ...current, ...parsed }));
+      setQueryInput(parsed.query ?? "");
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   const visible = useMemo(() => applyFilters(products, filters), [filters]);
 

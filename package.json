@@ -1,12 +1,18 @@
 {
-  "name": "perfume",
-  "version": "0.1.0",
+  "name": "scentora",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/build-image-variants.mjs",
     "build": "next build",
+    "build:static": "node scripts/build-static.mjs",
     "start": "next start",
-    "lint": "eslint"
+    "serve:static": "npx --yes serve out",
+    "lint": "eslint",
+    "verify:assets": "node scripts/verify-assets.mjs",
+    "verify:links": "node scripts/verify-links.mjs",
+    "test:interact": "node scripts/interact.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -25,6 +31,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "^15.5.28",
+    "puppeteer-core": "^25.14.0",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

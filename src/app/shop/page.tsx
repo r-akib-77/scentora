@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import Link from "next/link";
 
 import { CollectionView } from "@/components/shop/collection-view";
-import { parseFiltersFromParams } from "@/lib/filters";
 import { products } from "@/data/products";
 
 export const metadata: Metadata = {
@@ -11,10 +10,6 @@ export const metadata: Metadata = {
   description:
     "Browse the full Scentora catalogue — designer, niche and everyday fragrances available in decanted sizes from 3 ml to 15 ml.",
 };
-
-interface PageProps {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}
 
 /** Curated entry points shown above the catalogue. */
 const collections = [
@@ -50,10 +45,7 @@ const collections = [
   },
 ];
 
-export default async function ShopPage({ searchParams }: PageProps) {
-  const params = await searchParams;
-  const initialFilters = parseFiltersFromParams(params);
-
+export default function ShopPage() {
   return (
     <>
       <header className="border-b border-[var(--sc-line)] bg-[var(--sc-paper)]">
@@ -87,7 +79,7 @@ export default async function ShopPage({ searchParams }: PageProps) {
       </section>
 
       <Suspense fallback={<CollectionFallback />}>
-        <CollectionView initialFilters={initialFilters} />
+        <CollectionView />
       </Suspense>
     </>
   );

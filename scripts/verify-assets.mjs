@@ -54,7 +54,11 @@ for (const ref of referenced) {
 }
 
 const orphanImages = files.filter(
-  (f) => f.endsWith(".jpg") && !referenced.has("/" + path.relative(PUBLIC, f).split(path.sep).join("/")),
+  (f) =>
+    f.endsWith(".jpg") &&
+    !referenced.has("/" + path.relative(PUBLIC, f).split(path.sep).join("/")) &&
+    // Responsive variants are generated from the referenced originals.
+    !/-\d{3,4}\.jpg$/.test(path.basename(f)),
 );
 
 console.log(`\n${referenced.size} images referenced, ${missing} missing.`);
