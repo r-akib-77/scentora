@@ -12,6 +12,7 @@
 
 <div align="center">
 
+[![CI](https://github.com/r-akib-77/scentora/actions/workflows/ci.yml/badge.svg)](https://github.com/r-akib-77/scentora/actions/workflows/ci.yml)
 [![Next.js](https://img.shields.io/badge/Next.js-15-000000?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-087ea4?style=flat-square&logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
