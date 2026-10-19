@@ -1,103 +1,269 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, Compass } from "lucide-react";
 
-export default function Home() {
+import { BrandGrid } from "@/components/home/brand-grid";
+import { BundleCard } from "@/components/home/bundle-card";
+import { CategoryCard } from "@/components/home/category-card";
+import { FAQAccordion } from "@/components/home/faq-accordion";
+import { HeroSection } from "@/components/home/hero-section";
+import { NewsletterForm } from "@/components/home/newsletter-form";
+import { TestimonialCard } from "@/components/home/testimonial-card";
+import { TrustPoints } from "@/components/home/trust-points";
+import { FragranceFinder } from "@/components/finder/fragrance-finder";
+import { ProductGrid } from "@/components/product/product-grid";
+import { Reveal } from "@/components/ui/reveal";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { siteConfig } from "@/config/site";
+import { bundles, categories } from "@/data/bundles";
+import { faqs, testimonials } from "@/data/content";
+import { products } from "@/data/products";
+
+/** Resolve a list of slugs to products, falling back to an automatic pick. */
+function pickProducts(slugs: string[], fallback: (product: (typeof products)[number]) => boolean) {
+  const chosen = slugs
+    .map((slug) => products.find((product) => product.slug === slug))
+    .filter((product): product is (typeof products)[number] => Boolean(product));
+  if (chosen.length > 0) return chosen;
+  return products.filter(fallback).slice(0, 6);
+}
+
+export default function HomePage() {
+  const { sections } = siteConfig;
+
+  const featured = pickProducts(
+    siteConfig.featuredProductSlugs,
+    (product) => product.featured,
+  );
+  const bestsellers = pickProducts(
+    siteConfig.bestsellerProductSlugs,
+    (product) => product.bestseller,
+  );
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <>
+      <HeroSection />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Categories ------------------------------------------------------- */}
+      <section className="page-shell py-20 sm:py-24">
+        <Reveal>
+          <SectionHeading
+            eyebrow="Browse"
+            title={sections.categoriesTitle}
+            description={sections.categoriesSubtitle}
+            action={
+              <Link href="/shop" className="btn-outline">
+                All fragrances
+                <ArrowRight className="size-3.5" aria-hidden="true" />
+              </Link>
+            }
+          />
+        </Reveal>
+
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {categories.map((category, index) => (
+            <Reveal key={category.slug} delay={index * 0.06}>
+              <CategoryCard
+                category={category}
+                className="h-full [&>div]:h-full"
+              />
+            </Reveal>
+          ))}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      </section>
+
+      {/* Featured --------------------------------------------------------- */}
+      <section className="bg-[var(--sc-paper)] py-20 sm:py-24">
+        <div className="page-shell">
+          <Reveal>
+            <SectionHeading
+              eyebrow="The edit"
+              title={sections.featuredTitle}
+              description={sections.featuredSubtitle}
+              action={
+                <Link href="/shop" className="btn-outline">
+                  Shop all
+                  <ArrowRight className="size-3.5" aria-hidden="true" />
+                </Link>
+              }
+            />
+          </Reveal>
+
+          <div className="mt-10">
+            <ProductGrid products={featured} columns={4} />
+          </div>
+        </div>
+      </section>
+
+      {/* Bestsellers ------------------------------------------------------ */}
+      <section className="page-shell py-20 sm:py-24">
+        <Reveal>
+          <SectionHeading
+            eyebrow="Reordered"
+            title={sections.bestsellersTitle}
+            description={sections.bestsellersSubtitle}
+            action={
+              <Link href="/shop?sort=popularity" className="btn-outline">
+                See all bestsellers
+                <ArrowRight className="size-3.5" aria-hidden="true" />
+              </Link>
+            }
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+        </Reveal>
+
+        <div className="mt-10">
+          <ProductGrid products={bestsellers} columns={4} />
+        </div>
+      </section>
+
+      {/* Bundles ---------------------------------------------------------- */}
+      <section className="border-y border-[var(--sc-line)] bg-[var(--sc-paper)] py-20 sm:py-24">
+        <div className="page-shell">
+          <Reveal>
+            <SectionHeading
+              eyebrow="Curated sets"
+              title={sections.bundlesTitle}
+              description={sections.bundlesSubtitle}
+              action={
+                <Link href="/combos" className="btn-outline">
+                  All bundles
+                  <ArrowRight className="size-3.5" aria-hidden="true" />
+                </Link>
+              }
+            />
+          </Reveal>
+
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {bundles.slice(0, 3).map((bundle, index) => (
+              <Reveal key={bundle.id} delay={index * 0.07}>
+                <BundleCard bundle={bundle} className="h-full" />
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Finder ----------------------------------------------------------- */}
+      <section className="page-shell py-20 sm:py-24">
+        <Reveal>
+          <SectionHeading
+            eyebrow="Discovery"
+            title={sections.finderTitle}
+            description={sections.finderSubtitle}
+            align="center"
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+        </Reveal>
+
+        <Reveal delay={0.08} className="mx-auto mt-10 max-w-4xl">
+          <FragranceFinder />
+        </Reveal>
+
+        <div className="mt-6 flex justify-center">
+          <Link href="/fragrance-guide" className="btn-ghost">
+            <Compass className="size-3.5" aria-hidden="true" />
+            Read the full fragrance guide
+          </Link>
+        </div>
+      </section>
+
+      {/* Brands ----------------------------------------------------------- */}
+      <section className="bg-[var(--sc-paper)] py-20 sm:py-24">
+        <div className="page-shell">
+          <Reveal>
+            <SectionHeading
+              eyebrow="The directory"
+              title={sections.brandsTitle}
+              description={sections.brandsSubtitle}
+              action={
+                <Link href="/brands" className="btn-outline">
+                  All houses
+                  <ArrowRight className="size-3.5" aria-hidden="true" />
+                </Link>
+              }
+            />
+          </Reveal>
+
+          <Reveal delay={0.06} className="mt-10">
+            <BrandGrid columns={5} />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Trust ------------------------------------------------------------ */}
+      <section id="why-us" className="page-shell py-20 sm:py-24">
+        <Reveal>
+          <SectionHeading
+            eyebrow="Why shop with us"
+            title="Decanting, done properly"
+            description="Everything about the Scentora experience — written for this demo and easy to rewrite for a real business."
+            align="center"
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        </Reveal>
+
+        <Reveal delay={0.06} className="mt-10">
+          <TrustPoints columns={3} />
+        </Reveal>
+      </section>
+
+      {/* Testimonials ----------------------------------------------------- */}
+      <section className="bg-[var(--sc-paper)] py-20 sm:py-24">
+        <div className="page-shell">
+          <Reveal>
+            <SectionHeading
+              eyebrow="In their words"
+              title={sections.testimonialsTitle}
+              description={sections.testimonialsSubtitle}
+              align="center"
+            />
+          </Reveal>
+
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {testimonials.slice(0, 3).map((testimonial, index) => (
+              <Reveal key={testimonial.id} delay={index * 0.07}>
+                <TestimonialCard testimonial={testimonial} className="h-full" />
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ -------------------------------------------------------------- */}
+      <section className="page-shell py-20 sm:py-24">
+        <Reveal>
+          <SectionHeading
+            eyebrow="Need to know"
+            title={sections.faqTitle}
+            description={sections.faqSubtitle}
+          />
+        </Reveal>
+
+        <Reveal delay={0.06} className="mt-8">
+          <FAQAccordion items={faqs.slice(0, 5)} />
+        </Reveal>
+
+        <div className="mt-6">
+          <Link href="/fragrance-guide" className="btn-ghost">
+            More questions answered in the guide
+            <ArrowRight className="size-3.5" aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
+
+      {/* Newsletter ------------------------------------------------------- */}
+      <section className="border-t border-[var(--sc-line)] bg-[var(--sc-charcoal)] py-16 sm:py-20">
+        <div className="page-shell grid items-center gap-8 lg:grid-cols-[1.2fr_1fr]">
+          <Reveal>
+            <h2 className="text-[length:var(--text-section)] leading-[1.12] text-[var(--sc-ivory)] text-balance">
+              {sections.newsletterTitle}
+            </h2>
+            <p className="mt-3 max-w-lg text-[14px] leading-relaxed text-white/60">
+              {sections.newsletterSubtitle}
+            </p>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <NewsletterForm tone="dark" />
+          </Reveal>
+        </div>
+      </section>
+    </>
   );
 }

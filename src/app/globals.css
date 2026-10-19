@@ -1,26 +1,319 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   SCENTORA — DESIGN TOKENS
+   --------------------------------------------------------------------------
+   The colour tokens below intentionally point at runtime CSS variables
+   (`--sc-*`). Those variables are injected from `src/config/site.ts`, which
+   means you can re-skin the entire storefront by editing one object in one
+   file — no component needs to change.
+   ========================================================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Fallback palette — overwritten at runtime by the site configuration. */
+  --sc-ivory: #fbf7f1;
+  --sc-paper: #f4eee4;
+  --sc-beige: #e9dfce;
+  --sc-charcoal: #1f1b16;
+  --sc-muted: #6e6558;
+  --sc-gold: #a8874f;
+  --sc-gold-soft: #dcc49a;
+  --sc-line: #e4dacb;
+
+  --sc-header-height: 72px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ivory: var(--sc-ivory);
+  --color-paper: var(--sc-paper);
+  --color-beige: var(--sc-beige);
+  --color-charcoal: var(--sc-charcoal);
+  --color-muted: var(--sc-muted);
+  --color-gold: var(--sc-gold);
+  --color-goldsoft: var(--sc-gold-soft);
+  --color-line: var(--sc-line);
+
+  --font-serif: var(--font-display), var(--font-taka), "Cormorant Garamond", Georgia,
+    "Times New Roman", serif;
+  --font-sans: var(--font-body), var(--font-taka), "Inter", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+
+  --text-display: clamp(2.75rem, 6.4vw, 5.25rem);
+  --text-hero: clamp(2.25rem, 5vw, 4rem);
+  --text-section: clamp(1.75rem, 3.2vw, 2.75rem);
+  --text-subhead: clamp(1.25rem, 2vw, 1.6rem);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: var(--sc-line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--sc-ivory);
+    color: var(--sc-charcoal);
+    font-family: var(--font-sans);
+    font-feature-settings: "kern" 1, "liga" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    background-color: var(--sc-gold-soft);
+    color: var(--sc-charcoal);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--sc-gold);
+    outline-offset: 3px;
+  }
+
+  /* Remove the number input spinners — the quantity stepper is custom. */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  input[type="range"] {
+    accent-color: var(--sc-gold);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Page gutter used by every section for a consistent editorial rhythm. */
+  .page-shell {
+    width: 100%;
+    margin-inline: auto;
+    max-width: 84rem;
+    padding-inline: 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .page-shell {
+      padding-inline: 2rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .page-shell {
+      padding-inline: 3.5rem;
+    }
+  }
+
+  /* Small uppercase label used above section headings. */
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--sc-gold);
+  }
+
+  /* Thin hairline rule. */
+  .hairline {
+    border-top: 1px solid var(--sc-line);
+  }
+
+  /* Primary button */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: var(--sc-charcoal);
+    color: var(--sc-ivory);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 0.95rem 1.9rem;
+    transition:
+      background-color 220ms ease,
+      color 220ms ease,
+      transform 220ms ease;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--sc-gold);
+  }
+
+  .btn-primary:active {
+    transform: translateY(1px);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /* Secondary / outline button */
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid var(--sc-charcoal);
+    color: var(--sc-charcoal);
+    background-color: transparent;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 0.95rem 1.9rem;
+    transition:
+      background-color 220ms ease,
+      color 220ms ease,
+      border-color 220ms ease;
+  }
+
+  .btn-outline:hover {
+    background-color: var(--sc-charcoal);
+    color: var(--sc-ivory);
+  }
+
+  .btn-outline:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /* Ghost button used inside cards and drawers. */
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    color: var(--sc-charcoal);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    transition: color 200ms ease;
+  }
+
+  .btn-ghost:hover {
+    color: var(--sc-gold);
+  }
+
+  /* Form field */
+  .field {    width: 100%;
+    background-color: #fff;
+    border: 1px solid var(--sc-line);
+    padding: 0.7rem 0.9rem;
+    font-size: 0.875rem;
+    color: var(--sc-charcoal);
+    transition: border-color 200ms ease;
+  }
+
+  .field::placeholder {
+    color: color-mix(in srgb, var(--sc-muted) 70%, transparent);
+  }
+
+  .field:focus {
+    outline: none;
+    border-color: var(--sc-gold);
+  }
+
+  .field-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sc-muted);
+    margin-bottom: 0.45rem;
+  }
+
+  /*
+   * Prices. The Bengali taka sign is a tall glyph that does not sit on the
+   * same baseline as Latin digits, so it is scaled and aligned separately
+   * via `::first-letter`. Without this the symbol overlaps the line above.
+   */
+  .price {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    line-height: 1.1;
+  }
+
+  .price::first-letter {
+    font-family: var(--font-taka), var(--font-body);
+    font-size: 0.58em;
+    font-weight: 500;
+    vertical-align: 0.17em;
+    margin-right: 0.12em;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .grain {
+    position: relative;
+  }
+
+  /* Very light paper grain — keeps large ivory areas from looking flat. */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      rgba(31, 27, 22, 0.06) 1px,
+      transparent 0
+    );
+    background-size: 4px 4px;
+  }
+}
+
+/* Honour the user's reduced-motion preference across the whole site. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
