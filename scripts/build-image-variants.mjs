@@ -75,7 +75,7 @@ async function main() {
       const out = path.join(dir, `${base}-${width}${ext}`);
       await sharp(file)
         .resize({ width, withoutEnlargement: true })
-        .jpeg({ quality: 80, mozjpeg: true })
+        .jpeg({ quality: 79, mozjpeg: true })
         .toFile(out);
       written += 1;
     }

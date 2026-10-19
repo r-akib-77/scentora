@@ -49,3 +49,7 @@ next-env.d.ts
 /scripts/shots/
 /scripts/sheets/
 
+
+# generated deployment manifests
+scripts/.pages-manifest.json
+scripts/.last-deploy.json

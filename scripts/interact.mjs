@@ -57,6 +57,11 @@ async function main() {
   page.on("framenavigated", (frame) => {
     if (frame === page.mainFrame()) currentUrl = frame.url();
   });
+  page.on("response", (res) => {
+    if (res.status() >= 400) {
+      console.log(`  HTTP ${res.status()} -> ${res.url()}`);
+    }
+  });
 
   /* ---------------------------------------------------------------- shop */
   await page.goto(`${BASE}/shop`, { waitUntil: "load", timeout: 90000 });

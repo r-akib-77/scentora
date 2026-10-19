@@ -8,6 +8,7 @@
  * Usage: node scripts/build-static.mjs
  */
 import { spawn } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const root = process.cwd();
@@ -20,15 +21,36 @@ const nextBin = path.join(
   "next",
 );
 
-const child = spawn(process.execPath, [nextBin, "build"], {
-  cwd: root,
-  stdio: "inherit",
-  env: { ...process.env, STATIC_EXPORT: "true" },
-});
+/** Run a node script and wait for it to finish. */
+function run(script) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [path.join(root, "scripts", script)], {
+      cwd: root,
+      stdio: "inherit",
+    });
+    child.on("exit", (code) =>
+      code === 0 ? resolve() : reject(new Error(`${script} exited with ${code}`)),
+    );
+  });
+}
 
-child.on("exit", (code) => {
-  if (code === 0) {
-    console.log("\nStatic export written to ./out");
-  }
-  process.exit(code ?? 0);
-});
+async function main() {
+  // Regenerate the responsive image variants first so the export always
+  // contains up-to-date assets.
+  await run("build-image-variants.mjs");
+
+  const child = spawn(process.execPath, [nextBin, "build"], {
+    cwd: root,
+    stdio: "inherit",
+    env: { ...process.env, STATIC_EXPORT: "true" },
+  });
+
+  child.on("exit", (code) => {
+    if (code === 0) {
+      console.log("\nStatic export written to ./out");
+    }
+    process.exit(code ?? 0);
+  });
+}
+
+main();

@@ -861,8 +861,8 @@ export const products: Product[] = [
     tagline: "Crisp, green, immaculate",
     description:
       "A light, radiant citrus fragrance: lime and bergamot with basil and neroli over a clean musk base. It is the closest thing to fresh linen and cut grass — minimal, elegant and endlessly refreshing.",
-    image: "/images/products/jo-malone-lime-basel-neroli.jpg",
-    gallery: ["/images/products/jo-malone-lime-basel-neroli.jpg"],
+    image: "/images/products/jo-malone-lime-basil-neroli.jpg",
+    gallery: ["/images/products/jo-malone-lime-basil-neroli.jpg"],
     variants: [
       { size: 3, price: 700 },
       { size: 5, price: 1080 },

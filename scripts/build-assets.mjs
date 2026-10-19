@@ -42,7 +42,7 @@ const PRODUCT_MAP = {
   "armani-code": "px-071",
   "carolina-herrera-good-girl": "px-114",
   "montblanc-explorer": "px-024",
-  "jo-malone-lime-basel-neroli": "px-073",
+  "jo-malone-lime-basil-neroli": "px-073",
   "byredo-baltea": "px-120",
   "le-labo-santal-33": "px-099",
   "al-haramain-ambre-oud": "px-117",
