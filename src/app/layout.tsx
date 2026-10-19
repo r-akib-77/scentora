@@ -42,7 +42,9 @@ const takaFont = Noto_Sans_Bengali({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://scentora.demo"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://scentora.pages.dev",
+  ),
   title: {
     default: `${siteConfig.brand.name} — ${siteConfig.brand.description}`,
     template: `%s · ${siteConfig.brand.name}`,
